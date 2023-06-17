@@ -1,10 +1,8 @@
-from enum import Enum
-
 import sqlalchemy as sqla
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import relationship
 
-Base = declarative_base()
-
+from src.database.models.base import Base, OrderTypeEnum
+from src.database.models.organisation import Organisation  # noqa: F401
 
 # TODO: Use Mapped and mapped_column to declare models instead of declarative_base
 # see https://docs.sqlalchemy.org/en/20/orm/quickstart.html#declare-models
@@ -29,34 +27,15 @@ class ProductType(sqla.types.TypeDecorator):  # type: ignore
                 "Variety": variety,
                 "Packaging": packaging,
                 "Volume": volume,
-                "Price_per_unit": float(price_per_unit),
+                "Price_per_unit": price_per_unit,
             }
         return None
-
-
-class OrderTypeEnum(Enum):
-    BUY = "BUY"
-    SELL = "SELL"
-
-
-class OrganisationTypeEnum(Enum):
-    BUYER = "BUYER"
-    SELLER = "SELLER"
 
 
 # Classes used for database table
 
 
-class Product(Base):  # type: ignore
-    __tablename__ = "products"
-
-    id = sqla.Column(sqla.Integer, primary_key=True, nullable=False)
-    Category = sqla.Column(sqla.String, index=True, nullable=False)
-    Variety = sqla.Column(sqla.String, nullable=False)
-    Packaging = sqla.Column(sqla.String, nullable=False)
-
-
-class Order(Base):  # type: ignore
+class Order(Base):
     __tablename__ = "orders"
 
     id = sqla.Column(sqla.Integer, primary_key=True, nullable=False)
@@ -65,13 +44,3 @@ class Order(Base):  # type: ignore
     Products = sqla.Column(sqla.ARRAY(ProductType), nullable=False)  # type: ignore
     Organisation_id = sqla.Column(sqla.Integer, sqla.ForeignKey("organisations.id"))
     Organization = relationship("Organisation", backref="orders")
-
-
-class Organisation(Base):  # type: ignore
-    __tablename__ = "organisations"
-
-    id = sqla.Column(sqla.Integer, primary_key=True, nullable=False)
-    Name = sqla.Column(sqla.String, unique=True, index=True, nullable=False)
-    Type = sqla.Column(sqla.Enum(OrganisationTypeEnum), index=True, nullable=True)  # type: ignore
-    Products = relationship("Order")
-    Orders = relationship("Order")

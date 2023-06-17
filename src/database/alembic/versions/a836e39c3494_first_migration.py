@@ -7,7 +7,7 @@ Create Date: 2023-06-17 21:50:21.250741
 """
 from alembic import op
 import sqlalchemy as sa
-from src.database.model import ProductType
+from src.database.models.order import ProductType
 
 # revision identifiers, used by Alembic.
 revision = 'a836e39c3494'

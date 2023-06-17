@@ -12,7 +12,10 @@ from pathlib import Path
 PROJECT_DIR = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(PROJECT_DIR))
 
-from src.database.model import Base
+from src.database.models.base import Base
+from src.database.models.product import Product
+from src.database.models.order import Order
+from src.database.models.organisation import Organisation
 
 PROJECT_DIR = Path(__file__).parent.parent.parent.parent
 dotenv.load_dotenv(PROJECT_DIR / ".env")
@@ -21,7 +24,6 @@ dotenv.load_dotenv(PROJECT_DIR / ".env")
 config = context.config
 config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"])
 
-print(f"JAF {os.environ['DATABASE_URL']}")
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
