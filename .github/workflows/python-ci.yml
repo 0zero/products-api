@@ -32,6 +32,6 @@ jobs:
         poetry install
     - name: Linting
       run: |
-        poetry run black $@ bin src --check
+        poetry run black $@ bin src --exclude="src/database/alembic" --check
         poetry run flake8 --config ./setup.cfg src 
 
