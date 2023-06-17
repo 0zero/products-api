@@ -1,16 +1,24 @@
-from typing import Dict
+from logging import INFO, basicConfig, getLogger
+from fastapi import FastAPI
+from src.routers import ping
 
-from fastapi import Depends, FastAPI
+logger = getLogger(__name__)
+basicConfig(level=INFO)
 
-from src.config import Settings, get_settings
+def get_app() -> FastAPI:
+    app = FastAPI(
+        title="FastAPI Supplies Demo",
+    )
+    app.include_router(ping.router)
+    return app
 
-app = FastAPI()
+app = get_app()
+
+@app.on_event("startup")
+async def startup_event():
+    logger.info("Starting up...")
 
 
-@app.get("/ping")
-async def pong(settings: Settings = Depends(get_settings)) -> Dict[str, str]:
-    return {
-        "ping": "Yatta!",
-        "environment": settings.environment,
-        "testing": settings.testing,  # type: ignore
-    }
+@app.on_event("shutdown")
+async def shutdown_event():
+    logger.info("Shutting down...")
