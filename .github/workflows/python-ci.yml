@@ -34,4 +34,6 @@ jobs:
       run: |
         poetry run black $@ bin src --exclude="src/database/alembic" --check
         poetry run flake8 --config ./setup.cfg src 
+        poetry run isort . $(ISORT_ARGS)
+        poetry run mypy src
 
