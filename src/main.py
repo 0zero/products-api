@@ -1,15 +1,29 @@
-from fastapi import FastAPI, Depends
+from logging import INFO, basicConfig, getLogger
 
-from src.config import get_settings, Settings
+from fastapi import FastAPI
+
+from src.routers import ping
+
+logger = getLogger(__name__)
+basicConfig(level=INFO)
 
 
-app = FastAPI()
+def get_app() -> FastAPI:
+    app = FastAPI(
+        title="FastAPI Supplies Demo",
+    )
+    app.include_router(ping.router)
+    return app
 
 
-@app.get("/ping")
-async def pong(settings: Settings = Depends(get_settings)):
-    return {
-        "ping": "Yatta!",
-        "environment": settings.environment,
-        "testing": settings.testing,
-    }
+app = get_app()
+
+
+@app.on_event("startup")
+async def startup_event() -> None:
+    logger.info("Starting up...")
+
+
+@app.on_event("shutdown")
+async def shutdown_event() -> None:
+    logger.info("Shutting down...")
