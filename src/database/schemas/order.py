@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -11,15 +11,6 @@ class ProductOrderType(BaseModel):
     Packaging: str
     Volume: str
     Price_per_unit: str
-
-    def to_dict(self) -> Dict[str, str]:
-        return {
-            "Category": self.Category,
-            "Variety": self.Variety,
-            "Packaging": self.Packaging,
-            "Volume": self.Volume,
-            "Price_per_unit": self.Price_per_unit,
-        }
 
 
 class OrderDBBase(BaseModel):
