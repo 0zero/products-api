@@ -1,18 +1,27 @@
 from logging.config import fileConfig
+import sys
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+import dotenv
+import os
+from pathlib import Path
 
-from src.config import get_settings
+PROJECT_DIR = Path(__file__).parent.parent.parent.parent
+sys.path.append(str(PROJECT_DIR))
+
 from src.database.model import Base
 
+PROJECT_DIR = Path(__file__).parent.parent.parent.parent
+dotenv.load_dotenv(PROJECT_DIR / ".env")
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option("sqlalchemy.url", get_settings().database_url)
+config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"])
 
+print(f"JAF {os.environ['DATABASE_URL']}")
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
@@ -23,6 +32,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

@@ -1,7 +1,7 @@
 from enum import Enum
 
 import sqlalchemy as sqla
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
 
@@ -64,7 +64,7 @@ class Order(Base):  # type: ignore
     References = sqla.Column(sqla.Integer, sqla.ForeignKey("orders.id"))
     Products = sqla.Column(sqla.ARRAY(ProductType), nullable=False)  # type: ignore
     Organisation_id = sqla.Column(sqla.Integer, sqla.ForeignKey("organisations.id"))
-    Organization = sqla.relationship("Organisation", backref="orders")  # type: ignore
+    Organization = relationship("Organisation", backref="orders")
 
 
 class Organisation(Base):  # type: ignore
@@ -73,5 +73,5 @@ class Organisation(Base):  # type: ignore
     id = sqla.Column(sqla.Integer, primary_key=True, nullable=False)
     Name = sqla.Column(sqla.String, unique=True, index=True, nullable=False)
     Type = sqla.Column(sqla.Enum(OrganisationTypeEnum), index=True, nullable=True)  # type: ignore
-    Products = sqla.relationship("Order")  # type: ignore
-    Orders = sqla.relationship("Order")  # type: ignore
+    Products = relationship("Order")
+    Orders = relationship("Order")
