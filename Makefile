@@ -9,3 +9,4 @@ _formatters:
 
 _isort:
 	poetry run isort . $(ISORT_ARGS)
+	
