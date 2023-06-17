@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "API for performing CRUD operations on Products, Orders, and Organisation database entries"
 authors = ["japheth yates <japheth.yates@gmail.com>"]
 readme = "README.md"
-packages = [{include = "products_api"}]
+packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
