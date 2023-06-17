@@ -1,15 +1,12 @@
 import os
 from typing import Generator
+
 import pytest
 from starlette.testclient import TestClient
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 from src.config import Settings, get_settings
 from src.main import get_app
-from src.database.model import Base
-from src.database.session import get_db
+
 
 def get_settings_override():
     """

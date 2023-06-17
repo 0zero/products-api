@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends
 from typing import Dict
-from src.config import get_settings, Settings
 
+from fastapi import APIRouter, Depends
+
+from src.config import Settings, get_settings
 
 router = APIRouter()
+
 
 @router.get("/ping")
 async def pong(settings: Settings = Depends(get_settings)) -> Dict[str, str]:

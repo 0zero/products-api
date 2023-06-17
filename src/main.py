@@ -1,9 +1,12 @@
 from logging import INFO, basicConfig, getLogger
+
 from fastapi import FastAPI
+
 from src.routers import ping
 
 logger = getLogger(__name__)
 basicConfig(level=INFO)
+
 
 def get_app() -> FastAPI:
     app = FastAPI(
@@ -12,13 +15,15 @@ def get_app() -> FastAPI:
     app.include_router(ping.router)
     return app
 
+
 app = get_app()
 
+
 @app.on_event("startup")
-async def startup_event():
+async def startup_event() -> None:
     logger.info("Starting up...")
 
 
 @app.on_event("shutdown")
-async def shutdown_event():
+async def shutdown_event() -> None:
     logger.info("Shutting down...")
