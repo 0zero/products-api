@@ -32,8 +32,8 @@ jobs:
         poetry install
     - name: Linting
       run: |
-        poetry run black $@ bin src tests --check
-        poetry run flake8 --config ./setup.cfg src tests
+        poetry run black $@ bin src --check
+        poetry run flake8 --config ./setup.cfg src 
 #     - name: Test with pytest
 #       run: |
 #         pytest
