@@ -50,14 +50,14 @@ def test_get_many_products(test_db: Session) -> None:
     product_creacted2 = product_crud.create(db=test_db, obj_in=product2)
     product_get_many = product_crud.get_multi(db=test_db)
     assert len(product_get_many) > 1
-    assert product_get_many[0].id is not None
-    assert product_get_many[0].Category == product_creacted1.Category
-    assert product_get_many[0].Variety == product_creacted1.Variety
-    assert product_get_many[0].Packaging == product_creacted1.Packaging
-    assert product_get_many[1].id is not None
-    assert product_get_many[1].Category == product_creacted2.Category
-    assert product_get_many[1].Variety == product_creacted2.Variety
-    assert product_get_many[1].Packaging == product_creacted2.Packaging
+    assert product_get_many[-2].id is not None
+    assert product_get_many[-2].Category == product_creacted1.Category
+    assert product_get_many[-2].Variety == product_creacted1.Variety
+    assert product_get_many[-2].Packaging == product_creacted1.Packaging
+    assert product_get_many[-1].id is not None
+    assert product_get_many[-1].Category == product_creacted2.Category
+    assert product_get_many[-1].Variety == product_creacted2.Variety
+    assert product_get_many[-1].Packaging == product_creacted2.Packaging
 
 
 def test_update_product(test_db: Session) -> None:
