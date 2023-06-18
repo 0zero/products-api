@@ -2,10 +2,11 @@ import os
 from typing import Generator
 
 import pytest
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 
 from src.config import Settings, get_settings
 from src.main import get_app
+from src.database.session import SessionLocal, Session
 
 
 def get_settings_override():
@@ -24,3 +25,11 @@ def test_app() -> Generator[TestClient, TestClient, None]:
     app.dependency_overrides[get_settings] = get_settings_override
     with TestClient(app) as test_client:
         yield test_client
+
+
+@pytest.fixture(scope="session")
+def test_db() -> Generator[Session, Session, None]:
+    """
+    Generator for a test DB to be used in tests.
+    """
+    yield SessionLocal()
