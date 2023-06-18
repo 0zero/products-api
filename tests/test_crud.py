@@ -477,4 +477,55 @@ def test_delete_order(
     assert order_get is None
 
 
-# TODO: TEST fully coupled example
+def test_creation_all_types(
+    test_db: Session,
+    test_product_order_type_list_of_one: List[ProductOrderType],
+    test_product_order_type_list_of_two: List[ProductOrderType],
+) -> None:
+    # Create organisation
+    organisation_one = OrganisationCreate(
+        Name=get_random_string(), Type=OrganisationTypeEnum.BUYER
+    )
+    organisation_crud = CRUDOrganisation(Organisation)
+    organisation_created = organisation_crud.create(db=test_db, obj_in=organisation_one)
+    assert organisation_created.id is not None
+
+    # Create order
+    order_in_one = OrderCreate(
+        Type=OrderTypeEnum.SELL,
+        Products=test_product_order_type_list_of_two,
+        Organisation_id=organisation_created.id,
+    )
+
+    order_in_two = OrderCreate(
+        Type=OrderTypeEnum.BUY,
+        Products=test_product_order_type_list_of_one,
+        Organisation_id=organisation_created.id,
+    )
+
+    order_crud = CRUDOrder(Order)
+    order_created_one, product_ids_created_one = order_crud.create_new_order(
+        db=test_db, obj_in=order_in_one
+    )
+    order_created_two, product_ids_created_two = order_crud.create_new_order(
+        db=test_db, obj_in=order_in_two
+    )
+    assert order_created_one
+    assert product_ids_created_one
+    assert len(product_ids_created_one) == 2
+    assert order_created_two
+    assert product_ids_created_two
+    assert len(product_ids_created_two) == 1
+
+    assert len(organisation_created.Orders) == 2
+    assert len(organisation_created.Products) == len(product_ids_created_one) + len(
+        product_ids_created_two
+    )
+    organisation_orders = organisation_created.Orders
+    organisation_products = organisation_created.Products
+    assert organisation_orders[0].id == order_created_one.id
+    assert organisation_orders[1].id == order_created_two.id
+    test_product_type_two = test_product_order_type_list_of_two
+    test_product_type_one = test_product_order_type_list_of_one
+    assert organisation_products[0]["Category"] == test_product_type_two[0].Category
+    assert organisation_products[-1]["Category"] == test_product_type_one[0].Category
