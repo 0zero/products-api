@@ -9,6 +9,7 @@ from src.database.models.base import Base
 # Classes used for database table
 
 
+# TODO: I think I need a unique constraint on <Category, Variety, Packaging>
 class Product(Base):
     __tablename__ = "products"
 

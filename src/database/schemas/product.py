@@ -1,13 +1,27 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
-class ProductCreate(BaseModel):
+class ProductBase(BaseModel):
+    Category: Optional[str]
+    Variety: Optional[str]
+    Packaging: Optional[str]
+
+
+class ProductCreate(ProductBase):
     Category: str
     Variety: str
     Packaging: str
 
 
-class ProductDBBase(ProductCreate):
+class ProductUpdate(ProductBase):
+    Category: Optional[str]
+    Variety: Optional[str]
+    Packaging: Optional[str]
+
+
+class ProductDBBase(ProductBase):
     id: int
 
     class Config:

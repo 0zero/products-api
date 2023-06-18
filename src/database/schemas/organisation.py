@@ -1,14 +1,26 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 from src.database.models.base import OrganisationTypeEnum
 
 
-class OrganisationCreate(BaseModel):
+class OrganisationBase(BaseModel):
+    Name: Optional[str]
+    Type: Optional[OrganisationTypeEnum]
+
+
+class OrganisationCreate(OrganisationBase):
     Name: str
-    Type: OrganisationTypeEnum
+    Type: Optional[OrganisationTypeEnum]
 
 
-class OrganisationDBBase(OrganisationCreate):
+class OrganisationUpdate(OrganisationBase):
+    Name: Optional[str]
+    Type: Optional[OrganisationTypeEnum]
+
+
+class OrganisationDBBase(OrganisationBase):
     id: int
 
     class Config:

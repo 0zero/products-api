@@ -1,11 +1,10 @@
-from sqlalchemy.orm import Session
-
 from src.database.crud.base import CRUDBase
-from src.database.models.base import OrganisationTypeEnum
 from src.database.models.organisation import Organisation
-from src.database.schemas.organisation import OrganisationCreate, OrganisationDBBase
+from src.database.schemas.organisation import OrganisationCreate, OrganisationUpdate
+
+# TODO: Add Get Many with filters
 
 
-class CRUDOrganisation(CRUDBase[Organisation, OrganisationCreate, OrganisationCreate]):
+class CRUDOrganisation(CRUDBase[Organisation, OrganisationCreate, OrganisationUpdate]):
     def __init__(self, model: Organisation):
         super().__init__(model)

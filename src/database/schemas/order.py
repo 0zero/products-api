@@ -13,14 +13,28 @@ class ProductOrderType(BaseModel):
     Price_per_unit: str
 
 
-class OrderCreate(BaseModel):
+class OrderBase(BaseModel):
+    Type: Optional[OrderTypeEnum]
+    References: Optional[int]
+    Products: Optional[List[ProductOrderType]]
+    Organisation_id: Optional[int]
+
+
+class OrderCreate(OrderBase):
     Type: OrderTypeEnum
     References: Optional[int]
     Products: List[ProductOrderType]
     Organisation_id: int
 
 
-class OrderDBBase(OrderCreate):
+class OrderUpdate(OrderBase):
+    Type: Optional[OrderTypeEnum]
+    References: Optional[int]
+    Products: Optional[List[ProductOrderType]]
+    Organisation_id: Optional[int]
+
+
+class OrderDBBase(OrderBase):
     id: int
     Organisation_id: int
 
