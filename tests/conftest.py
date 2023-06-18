@@ -5,8 +5,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from src.config import Settings, get_settings
+from src.database.session import Session, SessionLocal
 from src.main import get_app
-from src.database.session import SessionLocal, Session
 
 
 def get_settings_override():

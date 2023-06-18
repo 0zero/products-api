@@ -1,21 +1,16 @@
 import pytest
-
-from src.database.crud.product import CRUDProduct
-from src.database.schemas.product import ProductCreate
-from src.database.models.product import Product
+from sqlalchemy.orm import Session
 
 from src.database.crud.order import CRUDOrder
-from src.database.schemas.order import OrderCreate, ProductOrderType
-from src.database.models.order import ProductType, Order
-
-
 from src.database.crud.organisation import CRUDOrganisation
-from src.database.schemas.organisation import OrganisationCreate
-from src.database.models.organisation import Organisation
-
+from src.database.crud.product import CRUDProduct
 from src.database.models.base import OrderTypeEnum, OrganisationTypeEnum
-
-from sqlalchemy.orm import Session
+from src.database.models.order import Order, ProductType
+from src.database.models.organisation import Organisation
+from src.database.models.product import Product
+from src.database.schemas.order import OrderCreate, ProductOrderType
+from src.database.schemas.organisation import OrganisationCreate
+from src.database.schemas.product import ProductCreate
 
 
 def test_create_product(test_db: Session) -> None:
