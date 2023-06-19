@@ -13,12 +13,11 @@ from src.database.models.base import Base, OrganisationTypeEnum
 # Classes used for database table
 
 
-# TODO:  unique constraint on name and type
 class Organisation(Base):
     __tablename__ = "organisations"
-
+    __table_args__ = (sqla.UniqueConstraint("Name", "Type"),)
     id = sqla.Column(sqla.Integer, primary_key=True, nullable=False)
-    Name = sqla.Column(sqla.String, unique=True, index=True, nullable=False)
+    Name = sqla.Column(sqla.String, index=True, nullable=False)
     Type = sqla.Column(sqla.Enum(OrganisationTypeEnum), index=True, nullable=True)  # type: ignore
     Orders = relationship("Order")
 

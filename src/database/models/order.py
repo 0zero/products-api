@@ -33,8 +33,6 @@ class ProductType(sqla.types.TypeDecorator):  # type: ignore
 
 # Classes used for database table
 
-# TODO: make Products nullable
-
 
 class Order(Base):
     __tablename__ = "orders"

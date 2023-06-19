@@ -9,10 +9,9 @@ from src.database.models.base import Base
 # Classes used for database table
 
 
-# TODO: I think I need a unique constraint on <Category, Variety, Packaging>
 class Product(Base):
     __tablename__ = "products"
-
+    __table_args__ = (sqla.UniqueConstraint("Category", "Variety", "Packaging"),)
     id = sqla.Column(sqla.Integer, primary_key=True, nullable=False)
     Category = sqla.Column(sqla.String, index=True, nullable=False)
     Variety = sqla.Column(sqla.String, nullable=False)
