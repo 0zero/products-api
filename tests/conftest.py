@@ -2,9 +2,12 @@ import os
 from typing import Generator
 
 import pytest
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 from src.config import Settings, get_settings
+from src.database.models.base import Base
 from src.main import get_app
 
 
@@ -24,3 +27,23 @@ def test_app() -> Generator[TestClient, TestClient, None]:
     app.dependency_overrides[get_settings] = get_settings_override
     with TestClient(app) as test_client:
         yield test_client
+
+
+@pytest.fixture(scope="session")
+def test_db() -> Generator[Session, Session, None]:
+    """
+    Generator for a test DB to be used in tests.
+    """
+    test_settings = get_settings_override()
+    test_engine = create_engine(test_settings.database_url)
+    test_session_local = sessionmaker(
+        autocommit=False, autoflush=False, bind=test_engine
+    )
+    connection = test_engine.connect()
+    transaction = connection.begin()
+    test_session = test_session_local(bind=connection)
+    Base.metadata.create_all(bind=test_engine)
+    yield test_session
+    test_session.close()
+    transaction.rollback()
+    connection.close()

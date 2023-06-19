@@ -1,4 +1,7 @@
+from typing import Any
+
 import sqlalchemy as sqla
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from src.database.models.base import Base, OrganisationTypeEnum
@@ -16,5 +19,8 @@ class Organisation(Base):
     id = sqla.Column(sqla.Integer, primary_key=True, nullable=False)
     Name = sqla.Column(sqla.String, unique=True, index=True, nullable=False)
     Type = sqla.Column(sqla.Enum(OrganisationTypeEnum), index=True, nullable=True)  # type: ignore
-    Products = relationship("Order")
     Orders = relationship("Order")
+
+    @hybrid_property
+    def Products(self) -> list[dict[str, Any]]:
+        return [product for order in self.orders for product in order.Products]
