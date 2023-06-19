@@ -6,6 +6,10 @@ from src.database.schemas.product import ProductCreate, ProductUpdate
 
 
 class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
+    """
+    Product CRUD class with default methods to Create, Read, Update, Delete (CRUD).
+    """
+    
     def __init__(self, model: Product):
         super().__init__(model)
 

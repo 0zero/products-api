@@ -6,5 +6,8 @@ from src.database.schemas.organisation import OrganisationCreate, OrganisationUp
 
 
 class CRUDOrganisation(CRUDBase[Organisation, OrganisationCreate, OrganisationUpdate]):
+    """
+    Organisation CRUD class with default methods to Create, Read, Update, Delete (CRUD).
+    """
     def __init__(self, model: Organisation):
         super().__init__(model)
