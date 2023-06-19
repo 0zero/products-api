@@ -216,7 +216,7 @@ def test_successful_get_many_orders_with_queries(
 
 
 def test_order_not_found_to_get(test_app_with_db: TestClient) -> None:
-    response = test_app_with_db.get("/api/order/999")
+    response = test_app_with_db.get("/api/order/15641875975986")
     assert response.status_code == 404
 
     assert response.json() == {"detail": "order not found"}
