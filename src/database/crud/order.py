@@ -9,8 +9,6 @@ from src.database.models.product import Product
 from src.database.schemas.order import OrderCreate, OrderUpdate
 from src.database.schemas.product import ProductCreate
 
-# TODO: Add Get Many with filters
-
 
 class CRUDOrder(CRUDBase[Order, OrderCreate, OrderUpdate]):
     """
