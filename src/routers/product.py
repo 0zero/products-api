@@ -15,6 +15,8 @@ router = APIRouter(
     tags=["products"], responses={404: {"description": "No products found, sorry!"}}
 )
 
+# TODO: Add GET MANY endpoint
+
 
 # POST endpoints
 @router.post("/api/product", response_model=ProductDBBase, status_code=201)
@@ -103,11 +105,13 @@ async def update_product_by_id(
     return: ProductDBBase pydantic class containing all the data pertaining to the product
     """
     product_crud = CRUDProduct(Product)  # type: ignore
-    db_product = product_crud.get(db=db, id=product_id)
-    assert isinstance(db_product, Product)
-    product = product_crud.update(db=db, db_obj=db_product, obj_in=product_in)
-    if not product:
+    db_product: Product | None = product_crud.get(db=db, id=product_id)
+
+    if db_product:
+        product = product_crud.update(db=db, db_obj=db_product, obj_in=product_in)
+    else:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
         )
+
     return product

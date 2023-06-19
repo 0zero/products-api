@@ -1,12 +1,8 @@
-from typing import Any, Dict, Union
-
 from sqlalchemy.orm import Session
 
 from src.database.crud.base import CRUDBase
 from src.database.models.product import Product
 from src.database.schemas.product import ProductCreate, ProductUpdate
-
-# TODO: Add Get Many with filters
 
 
 class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
@@ -18,6 +14,14 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
     ) -> list[Product]:
         """
         Get many products by category
+
+        input params:
+            category -- The category of the product
+            skip -- The number of records to skip
+            limit -- The number of records to return
+            db -- The database session
+
+        return: A list of products
         """
         return (
             db.query(self.model)
@@ -32,6 +36,14 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
     ) -> list[Product]:
         """
         Get many products by variety
+
+        input params:
+            variety -- The variety of the product
+            skip -- The number of records to skip
+            limit -- The number of records to return
+            db -- The database session
+
+        return: A list of products
         """
         return (
             db.query(self.model)
@@ -46,6 +58,14 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
     ) -> list[Product]:
         """
         Get many products by packaging
+
+        input params:
+            packaging -- The packaging of the product
+            skip -- The number of records to skip
+            limit -- The number of records to return
+            db -- The database session
+
+        return: A list of products
         """
         return (
             db.query(self.model)
@@ -66,6 +86,16 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
     ) -> list[Product]:
         """
         Get many products by category, variety, and packaging
+
+        input params:
+            category -- The category of the product
+            variety -- The variety of the product
+            packaging -- The packaging of the product
+            skip -- The number of records to skip
+            limit -- The number of records to return
+            db -- The database session
+
+        return: A list of products
         """
         return (
             db.query(self.model)
@@ -79,18 +109,5 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
             .all()
         )
 
-    def update(
-        self,
-        db: Session,
-        db_obj: Product,
-        obj_in: Union[ProductUpdate, Dict[str, Any]],
-    ) -> Product:
-        """Update a product ensuring we aren't setting nulls"""
-        # TODO: Add some logic to ensure we are properly validating the update
-        # before we contact the database
-        if isinstance(obj_in, dict):
-            update_data = obj_in
-        else:
-            update_data = obj_in.dict(exclude_unset=True)
 
-        return super().update(db, db_obj=db_obj, obj_in=update_data)
+# TODO: Add some logic to ensure we are properly validating the update

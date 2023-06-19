@@ -2,7 +2,7 @@ from logging import INFO, basicConfig, getLogger
 
 from fastapi import FastAPI
 
-from src.routers import ping, product
+from src.routers import order, organisation, product
 
 logger = getLogger(__name__)
 basicConfig(level=INFO)
@@ -12,8 +12,9 @@ def get_app() -> FastAPI:
     app = FastAPI(
         title="FastAPI Supplies Demo",
     )
-    app.include_router(ping.router)
     app.include_router(product.router)
+    app.include_router(organisation.router)
+    app.include_router(order.router)
     return app
 
 

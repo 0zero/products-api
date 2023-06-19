@@ -23,7 +23,7 @@ class OrderBase(BaseModel):
 class OrderCreate(OrderBase):
     Type: OrderTypeEnum
     References: Optional[int]
-    Products: List[ProductOrderType]
+    Products: Optional[List[ProductOrderType]]
     Organisation_id: int
 
 

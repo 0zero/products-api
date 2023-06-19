@@ -39,12 +39,13 @@ class CRUDOrder(CRUDBase[Order, OrderCreate, OrderUpdate]):
         # Create the products
         product_ids = []
         product_crud = CRUDProduct(Product)  # type: ignore
-        for product in obj_in.Products:
-            product_obj_in = ProductCreate(
-                Category=product.Category,
-                Variety=product.Variety,
-                Packaging=product.Packaging,
-            )
-            product_created = product_crud.create(db=db, obj_in=product_obj_in)
-            product_ids.append(product_created.id)
+        if obj_in.Products:
+            for product in obj_in.Products:
+                product_obj_in = ProductCreate(
+                    Category=product.Category,
+                    Variety=product.Variety,
+                    Packaging=product.Packaging,
+                )
+                product_created = product_crud.create(db=db, obj_in=product_obj_in)
+                product_ids.append(product_created.id)
         return db_obj, product_ids  # type: ignore
