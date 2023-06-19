@@ -1,6 +1,7 @@
 from logging import INFO, basicConfig, getLogger
+from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from src.database.crud.organisation import CRUDOrganisation
@@ -70,6 +71,43 @@ async def get_organisation_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail="Organisation not found"
         )
     return organisation
+
+
+@router.get(
+    "/api/organisation", response_model=List[OrganisationDBBase], status_code=200
+)
+async def get_all_organisations(
+    db: Session = Depends(get_db),
+    skip: int = Query(
+        default=0,
+        description=(
+            "How many Orders to skip before returning the remaining Organisations"
+        ),
+        ge=0,
+    ),
+    limit: int = Query(
+        default=10,
+        description="Limit the number of Organisations displayed on each page",
+        ge=1,
+    ),
+) -> List[Organisation]:
+    """
+    GET endpoint to retrieve all Organisations from a Postgres database
+
+    input params:
+        db: database session so that we can connect to our database
+        skip: How many Organisations to skip before returning the remaining Organisations
+        limit: Limit the number of Organisations displayed on each page
+    return: List of OrganisationDBBase pydantic class containing all the
+            data pertaining to the order
+    """
+    organisation_crud = CRUDOrganisation(Organisation)  # type: ignore
+    organisations = organisation_crud.get_multi(db=db, skip=skip, limit=limit)
+    if not organisations:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Organisations not found"
+        )
+    return organisations
 
 
 # DELETE endpoints

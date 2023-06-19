@@ -13,6 +13,15 @@ def test_product_one() -> ProductCreate:
     )
 
 
+@pytest.fixture()
+def test_product_two() -> ProductCreate:
+    return ProductCreate(
+        Category="test category 2",
+        Variety="test variety 2",
+        Packaging="test packaging 2",
+    )
+
+
 def test_successful_post_single_product(
     test_app_with_db: TestClient, test_product_one: ProductCreate
 ) -> None:
@@ -85,6 +94,39 @@ def test_unsuccessful_get_single_product(test_app_with_db: TestClient) -> None:
             }
         ]
     }
+
+
+def test_successful_get_many_products_with_queries(
+    test_app_with_db: TestClient,
+    test_product_one: ProductCreate,
+    test_product_two: ProductCreate,
+) -> None:
+    post_response_one = test_app_with_db.post(
+        "/api/product", json=test_product_one.dict()
+    )
+    assert post_response_one.status_code == 201
+    post_content_one = post_response_one.json()
+    assert post_content_one["id"] is not None
+
+    post_response_two = test_app_with_db.post(
+        "/api/product", json=test_product_two.dict()
+    )
+    assert post_response_two.status_code == 201
+    post_content_two = post_response_two.json()
+    assert post_content_two["id"] is not None
+
+    count_get_response = test_app_with_db.get("/api/product")
+    assert count_get_response.status_code == 200
+    number_of_products = len(count_get_response.json())
+
+    get_response = test_app_with_db.get(
+        f"/api/product?skip={0}&limit={number_of_products}"
+    )
+    assert get_response.status_code == 200
+    get_content = get_response.json()
+
+    assert isinstance(get_content, list)
+    assert len(get_content) == number_of_products
 
 
 def test_successful_delete_single_product(
