@@ -5,11 +5,11 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 
-class OrderTypeEnum(Enum):
-    BUY = "BUY"
-    SELL = "SELL"
+class OrderTypeEnum(str, Enum):
+    BUY: str = "BUY"
+    SELL: str = "SELL"
 
 
-class OrganisationTypeEnum(Enum):
-    BUYER = "BUYER"
-    SELLER = "SELLER"
+class OrganisationTypeEnum(str, Enum):
+    BUYER: str = "BUYER"
+    SELLER: str = "SELLER"

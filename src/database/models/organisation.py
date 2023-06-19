@@ -23,4 +23,4 @@ class Organisation(Base):
 
     @hybrid_property
     def Products(self) -> list[dict[str, Any]]:
-        return [product for order in self.orders for product in order.Products]
+        return [product for order in self.Orders for product in order.Products]

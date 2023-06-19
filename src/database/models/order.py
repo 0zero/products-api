@@ -1,5 +1,4 @@
 import sqlalchemy as sqla
-from sqlalchemy.orm import relationship
 
 from src.database.models.base import Base, OrderTypeEnum
 from src.database.models.organisation import Organisation  # noqa: F401
@@ -43,4 +42,3 @@ class Order(Base):
     References = sqla.Column(sqla.Integer, sqla.ForeignKey("orders.id"))
     Products = sqla.Column(sqla.ARRAY(ProductType), nullable=False)  # type: ignore
     Organisation_id = sqla.Column(sqla.Integer, sqla.ForeignKey("organisations.id"))
-    Organization = relationship("Organisation", backref="orders")
