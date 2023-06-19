@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from src.config import Settings, get_settings
 from src.database.models.base import Base
+from src.database.session import get_db
 from src.main import get_app
 
 
@@ -47,3 +48,24 @@ def test_db() -> Generator[Session, Session, None]:
     test_session.close()
     transaction.rollback()
     connection.close()
+
+
+@pytest.fixture(scope="session")
+def test_app_with_db(test_db: Session) -> Generator[TestClient, TestClient, None]:
+    """
+    Generator for a test application with database.
+    """
+    app = get_app()
+    app.dependency_overrides[get_settings] = get_settings_override
+
+    # Test dependency injection
+    def _get_test_db():
+        try:
+            yield test_db
+        finally:
+            pass
+
+    app.dependency_overrides[get_db] = _get_test_db
+
+    with TestClient(app) as test_client:
+        yield test_client
