@@ -5,7 +5,7 @@ from src.database.models.base import OrganisationTypeEnum
 from src.database.schemas.organisation import OrganisationCreate, OrganisationUpdate
 
 
-def test_successful_post_single_organisationt(test_app_with_db: TestClient) -> None:
+def test_successful_post_single_organisation(test_app_with_db: TestClient) -> None:
     organisation_in = OrganisationCreate(
         Name=get_random_string(),
         Type=OrganisationTypeEnum.BUYER,

@@ -2,7 +2,7 @@ from logging import INFO, basicConfig, getLogger
 
 from fastapi import FastAPI
 
-from src.routers import organisation, product, order
+from src.routers import order, organisation, product
 
 logger = getLogger(__name__)
 basicConfig(level=INFO)
