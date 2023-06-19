@@ -26,9 +26,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return result if result else None
 
     def get_multi(
-        self, db: Session, *, skip: int = 0, limit: int = 100
+        self, db: Session, *, skip: int = 0, limit: int = 10
     ) -> List[ModelType]:
-        result = db.query(self.model).offset(skip).limit(limit).all()
+        result = (
+            db.query(self.model).order_by(self.model.id).offset(skip).limit(limit).all()
+        )
         return result if result else None  # type: ignore
 
     def update(

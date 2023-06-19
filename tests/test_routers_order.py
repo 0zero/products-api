@@ -165,6 +165,56 @@ def test_successful_get_single_order(
     assert get_content["Organisation_id"] == organisation_content["id"]
 
 
+def test_successful_get_many_orders_with_queries(
+    test_app_with_db: TestClient,
+    test_product_order_type_list_of_two: List[ProductOrderType],
+) -> None:
+    # Create organisation
+    organisation_in = OrganisationCreate(
+        Name=get_random_string(), Type=OrganisationTypeEnum.BUYER
+    )
+    organisation_response = test_app_with_db.post(
+        "/api/organisation", json=organisation_in.dict()
+    )
+    assert organisation_response.status_code == 201
+    organisation_content = organisation_response.json()
+    assert organisation_content["id"] is not None
+
+    # Create order
+    order_one = OrderCreate(
+        Type=OrderTypeEnum.SELL,
+        Products=test_product_order_type_list_of_two,
+        Organisation_id=organisation_content["id"],
+    )
+    post_response_one = test_app_with_db.post("/api/order", json=order_one.dict())
+    assert post_response_one.status_code == 201
+    post_content_one = post_response_one.json()
+    assert post_content_one["id"] is not None
+
+    order_two = OrderCreate(
+        Type=OrderTypeEnum.BUY,
+        Products=test_product_order_type_list_of_two,
+        Organisation_id=organisation_content["id"],
+    )
+    post_response_two = test_app_with_db.post("/api/order", json=order_two.dict())
+    assert post_response_two.status_code == 201
+    post_content_two = post_response_two.json()
+    assert post_content_two["id"] is not None
+
+    # Get order
+    count_get_response = test_app_with_db.get("/api/order")
+    assert count_get_response.status_code == 200
+    number_of_orders = len(count_get_response.json())
+
+    get_response = test_app_with_db.get(f"/api/order?skip={0}&limit={number_of_orders}")
+
+    assert get_response.status_code == 200
+
+    get_content = get_response.json()
+    assert isinstance(get_content, list)
+    assert len(get_content) == number_of_orders
+
+
 def test_order_not_found_to_get(test_app_with_db: TestClient) -> None:
     response = test_app_with_db.get("/api/order/999")
     assert response.status_code == 404

@@ -1,6 +1,7 @@
 from logging import INFO, basicConfig, getLogger
+from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from src.database.crud.product import CRUDProduct
@@ -14,8 +15,6 @@ basicConfig(level=INFO)
 router = APIRouter(
     tags=["products"], responses={404: {"description": "No products found, sorry!"}}
 )
-
-# TODO: Add GET MANY endpoint
 
 
 # POST endpoints
@@ -60,6 +59,41 @@ async def get_product_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
         )
     return product
+
+
+@router.get("/api/product", response_model=List[ProductDBBase], status_code=200)
+async def get_all_products(
+    db: Session = Depends(get_db),
+    skip: int = Query(
+        default=0,
+        description=(
+            "How many Products to skip before returning the remaining Products"
+        ),
+        ge=0,
+    ),
+    limit: int = Query(
+        default=10,
+        description="Limit the number of Products displayed on each page",
+        ge=1,
+    ),
+) -> List[Product]:
+    """
+    GET endpoint to retrieve all Products from a Postgres database
+
+    input params:
+        db: database session so that we can connect to our database
+        skip: How many Products to skip before returning the remaining Products
+        limit: Limit the number of Products displayed on each page
+    return: List of ProductDBBase pydantic class containing all the
+            data pertaining to the product
+    """
+    product_crud = CRUDProduct(Product)  # type: ignore
+    products = product_crud.get_multi(db=db, skip=skip, limit=limit)
+    if not products:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Products not found"
+        )
+    return products
 
 
 # DELETE endpoints

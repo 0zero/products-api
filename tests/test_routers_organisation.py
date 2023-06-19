@@ -59,6 +59,47 @@ def test_successful_get_single_organisation(test_app_with_db: TestClient) -> Non
     assert get_content["Type"] == organisation_in.Type
 
 
+def test_successful_get_many_organisation_with_queries(
+    test_app_with_db: TestClient,
+) -> None:
+    organisation_one = OrganisationCreate(
+        Name=get_random_string(),
+        Type=OrganisationTypeEnum.BUYER,
+    )
+    post_response_one = test_app_with_db.post(
+        "/api/organisation", json=organisation_one.dict()
+    )
+    assert post_response_one.status_code == 201
+    post_content_one = post_response_one.json()
+    assert post_content_one["id"] is not None
+
+    organisation_two = OrganisationCreate(
+        Name=get_random_string(),
+        Type=OrganisationTypeEnum.SELLER,
+    )
+    post_response_two = test_app_with_db.post(
+        "/api/organisation", json=organisation_two.dict()
+    )
+    assert post_response_two.status_code == 201
+    post_content_two = post_response_two.json()
+    assert post_content_two["id"] is not None
+
+    # Get all organisations
+    count_get_response = test_app_with_db.get("/api/organisation")
+    assert count_get_response.status_code == 200
+    number_of_organisations = len(count_get_response.json())
+
+    get_response = test_app_with_db.get(
+        f"/api/organisation?skip={0}&limit={number_of_organisations}"
+    )
+
+    assert get_response.status_code == 200
+
+    get_content = get_response.json()
+    assert isinstance(get_content, list)
+    assert len(get_content) == number_of_organisations
+
+
 def test_unsuccessful_get_single_organisation(test_app_with_db: TestClient) -> None:
     get_response = test_app_with_db.get(f"/api/organisation/{5.4}")
     assert get_response.status_code == 422

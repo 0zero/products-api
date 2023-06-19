@@ -1,6 +1,7 @@
 from logging import INFO, basicConfig, getLogger
+from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from src.database.crud.order import CRUDOrder
@@ -15,8 +16,6 @@ router = APIRouter(
     tags=["orders"],
     responses={404: {"description": "No order found, sorry!"}},
 )
-
-# TODO: Add GET MANY endpoint
 
 
 def _copy_over_quantities(order_in: OrderCreate, order_ref: Order) -> OrderCreate:
@@ -107,6 +106,39 @@ async def get_order_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail="order not found"
         )
     return order
+
+
+@router.get("/api/order", response_model=List[OrderDBBase], status_code=200)
+async def get_all_orders(
+    db: Session = Depends(get_db),
+    skip: int = Query(
+        default=0,
+        description=("How many Orders to skip before returning the remaining Orders"),
+        ge=0,
+    ),
+    limit: int = Query(
+        default=10,
+        description="Limit the number of Orders displayed on each page",
+        ge=1,
+    ),
+) -> List[Order]:
+    """
+    GET endpoint to retrieve all Orders from a Postgres database
+
+    input params:
+        db: database session so that we can connect to our database
+        skip: How many Orders to skip before returning the remaining Orders
+        limit: Limit the number of Orders displayed on each page
+    return: List of OrderDBBase pydantic class containing all the
+            data pertaining to the order
+    """
+    order_crud = CRUDOrder(Order)  # type: ignore
+    orders = order_crud.get_multi(db=db, skip=skip, limit=limit)
+    if not orders:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Orders not found"
+        )
+    return orders
 
 
 # DELETE endpoints
