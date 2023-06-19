@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from src.database.models.base import OrganisationTypeEnum
+from src.database.schemas.order import OrderDBBase, ProductOrderType
 
 
 class OrganisationBase(BaseModel):
@@ -22,6 +23,8 @@ class OrganisationUpdate(OrganisationBase):
 
 class OrganisationDBBase(OrganisationBase):
     id: int
+    Orders: list[OrderDBBase]
+    Products: list[ProductOrderType]
 
     class Config:
         orm_mode = True

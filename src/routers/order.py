@@ -1,5 +1,5 @@
 from logging import INFO, basicConfig, getLogger
-from typing import List
+from typing import Any, Dict, List, Tuple
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
@@ -18,7 +18,9 @@ router = APIRouter(
 )
 
 
-def _copy_over_quantities(order_in: OrderCreate, order_ref: Order) -> OrderCreate:
+def _copy_over_quantities(
+    order_in: OrderCreate, order_ref: Order
+) -> Tuple[OrderCreate, Dict[str, Any]]:
     """
     Helper function to copy over quantities from a previous order to the new order
 
@@ -40,11 +42,13 @@ def _copy_over_quantities(order_in: OrderCreate, order_ref: Order) -> OrderCreat
     dict_in = order_in.dict(exclude_unset=True)
     dict_ref = ref_object.dict(exclude_unset=True)
 
+    fields_updated_by_reference = {}
     for key, value in dict_ref.items():
         if key in dict_in and dict_in[key] is None:
             dict_in[key] = value
+            fields_updated_by_reference[key] = value
 
-    return OrderCreate(**dict_in)
+    return OrderCreate(**dict_in), fields_updated_by_reference
 
 
 # POST endpoints
@@ -74,10 +78,30 @@ async def create_order(
         logger.info(msg)
         ref_order = order_crud.get(db=db, id=order_in.References)
         if ref_order:
-            updated_order_in = _copy_over_quantities(order_in, ref_order)
-            return order_crud.create(db=db, obj_in=updated_order_in)
+            updated_order_in, updated_details = _copy_over_quantities(
+                order_in, ref_order
+            )
+            logger.info(
+                f"Updated order_in object from reference with the following: {updated_details}"
+            )
+            order_created_ref, product_ids_created_ref = order_crud.create_new_order(
+                db=db, obj_in=updated_order_in
+            )
+            logger.info(
+                f"Order {order_created_ref.id} created with {str(len(product_ids_created_ref))} "
+                f"new products: {product_ids_created_ref}."
+            )
+            return order_created_ref
 
-    return order_crud.create(db=db, obj_in=order_in)
+    order_created, product_ids_created = order_crud.create_new_order(
+        db=db, obj_in=order_in
+    )
+
+    logger.info(
+        f"Order {order_created.id} created with {str(len(product_ids_created))} "
+        f"new products: {product_ids_created}."
+    )
+    return order_created
 
 
 # GET endpoints

@@ -20,7 +20,7 @@ from src.database.schemas.product import ProductCreate, ProductUpdate
 def test_product_one() -> ProductCreate:
     return ProductCreate(
         Category="test category 1",
-        Variety="test variety 1",
+        Variety=get_random_string(),
         Packaging="test packaging 1",
     )
 
@@ -29,7 +29,7 @@ def test_product_one() -> ProductCreate:
 def test_product_two() -> ProductCreate:
     return ProductCreate(
         Category="test category 2",
-        Variety="test variety 2",
+        Variety=get_random_string(),
         Packaging="test packaging 2",
     )
 
@@ -38,7 +38,7 @@ def test_product_two() -> ProductCreate:
 def test_product_three() -> ProductCreate:
     return ProductCreate(
         Category="test category 3",
-        Variety="test variety 3",
+        Variety=get_random_string(),
         Packaging="test packaging 3",
     )
 
@@ -50,7 +50,7 @@ def test_product_order_type_list_of_one(
     return [
         ProductOrderType(
             Category=test_product_one.Category,
-            Variety=test_product_one.Variety,
+            Variety=get_random_string(),
             Packaging=test_product_one.Packaging,
             Volume="test volume 1",
             Price_per_unit="test price per unit 1",
@@ -64,14 +64,14 @@ def test_product_order_type_list_of_two(
 ) -> List[ProductOrderType]:
     product_order_one = ProductOrderType(
         Category=test_product_one.Category,
-        Variety=test_product_one.Variety,
+        Variety=get_random_string(),
         Packaging=test_product_one.Packaging,
         Volume="test volume 1",
         Price_per_unit="test price per unit 1",
     )
     product_order_two = ProductOrderType(
         Category=test_product_two.Category,
-        Variety=test_product_two.Variety,
+        Variety=get_random_string(),
         Packaging=test_product_two.Packaging,
         Volume="test volume 2",
         Price_per_unit="test price per unit 2",
@@ -317,7 +317,7 @@ def test_create_order_with_no_references(
 
 def test_create_order_with_references(
     test_db: Session,
-    test_product_order_type_list_of_two: List[ProductOrderType],
+    test_product_one: ProductCreate,
 ) -> None:
     organisation_one = OrganisationCreate(
         Name=get_random_string(), Type=OrganisationTypeEnum.BUYER
@@ -328,9 +328,27 @@ def test_create_order_with_references(
 
     order_crud = CRUDOrder(Order)
 
+    # Create order
+    product_list = [
+        ProductOrderType(
+            Category=test_product_one.Category,
+            Variety=get_random_string(),
+            Packaging=test_product_one.Packaging,
+            Volume=get_random_string(),
+            Price_per_unit="test price per unit 1",
+        ),
+        ProductOrderType(
+            Category=test_product_one.Category,
+            Variety=get_random_string(),
+            Packaging=test_product_one.Packaging,
+            Volume=get_random_string(),
+            Price_per_unit="test price per unit 1",
+        ),
+    ]
+
     reference_order_in = OrderCreate(
         Type=OrderTypeEnum.SELL,
-        Products=test_product_order_type_list_of_two,
+        Products=product_list,
         Organisation_id=organisation_created.id,
     )
     (
@@ -341,9 +359,25 @@ def test_create_order_with_references(
     assert reference_product_ids_created
     assert len(reference_product_ids_created) == 2
 
+    product_list_two = [
+        ProductOrderType(
+            Category=test_product_one.Category,
+            Variety=get_random_string(),
+            Packaging=test_product_one.Packaging,
+            Volume=get_random_string(),
+            Price_per_unit="test price per unit 1",
+        ),
+        ProductOrderType(
+            Category=test_product_one.Category,
+            Variety=get_random_string(),
+            Packaging=test_product_one.Packaging,
+            Volume=get_random_string(),
+            Price_per_unit="test price per unit 1",
+        ),
+    ]
     order_in = OrderCreate(
         Type=OrderTypeEnum.SELL,
-        Products=test_product_order_type_list_of_two,
+        Products=product_list_two,
         Organisation_id=organisation_created.id,
         References=reference_order_created.id,
     )
@@ -359,8 +393,8 @@ def test_create_order_with_references(
     assert order_created.Organisation_id == organisation_created.id
     assert order_created.References == reference_order_created.id
     assert len(order_created.Products) == 2
-    test_product_type_one = test_product_order_type_list_of_two[0]
-    test_product_type_two = test_product_order_type_list_of_two[1]
+    test_product_type_one = product_list_two[0]
+    test_product_type_two = product_list_two[1]
     assert order_created.Products[0]["Category"] == test_product_type_one.Category
     assert order_created.Products[1]["Category"] == test_product_type_two.Category
 
@@ -372,9 +406,7 @@ def test_create_order_with_references(
     assert product_get_second_product.id == product_ids_created[1]
 
 
-def test_read_order(
-    test_db: Session, test_product_order_type_list_of_one: List[ProductOrderType]
-) -> None:
+def test_read_order(test_db: Session, test_product_one: ProductCreate) -> None:
     # Create organisation
     organisation_one = OrganisationCreate(
         Name=get_random_string(), Type=OrganisationTypeEnum.BUYER
@@ -384,9 +416,18 @@ def test_read_order(
     assert organisation_created.id is not None
 
     # Create order
+    product_list = [
+        ProductOrderType(
+            Category=test_product_one.Category,
+            Variety=get_random_string(),
+            Packaging=test_product_one.Packaging,
+            Volume="test volume 1",
+            Price_per_unit="test price per unit 1",
+        )
+    ]
     order_in = OrderCreate(
         Type=OrderTypeEnum.SELL,
-        Products=test_product_order_type_list_of_one,
+        Products=product_list,
         Organisation_id=organisation_created.id,
     )
 
@@ -405,9 +446,7 @@ def test_read_order(
     assert order_get.Products == order_created.Products
 
 
-def test_update_order(
-    test_db: Session, test_product_order_type_list_of_one: List[ProductOrderType]
-) -> None:
+def test_update_order(test_db: Session, test_product_one: ProductCreate) -> None:
     # Create organisation
     organisation_one = OrganisationCreate(
         Name=get_random_string(), Type=OrganisationTypeEnum.BUYER
@@ -417,9 +456,19 @@ def test_update_order(
     assert organisation_created.id is not None
 
     # Create order
+    product_list = [
+        ProductOrderType(
+            Category=test_product_one.Category,
+            Variety=get_random_string(),
+            Packaging=test_product_one.Packaging,
+            Volume="test volume 1",
+            Price_per_unit="test price per unit 1",
+        )
+    ]
+
     order_in = OrderCreate(
         Type=OrderTypeEnum.SELL,
-        Products=test_product_order_type_list_of_one,
+        Products=product_list,
         Organisation_id=organisation_created.id,
     )
 
@@ -442,9 +491,7 @@ def test_update_order(
     assert order_updated.References == order_created.References
 
 
-def test_delete_order(
-    test_db: Session, test_product_order_type_list_of_one: List[ProductOrderType]
-) -> None:
+def test_delete_order(test_db: Session, test_product_one: ProductCreate) -> None:
     # Create organisation
     organisation_one = OrganisationCreate(
         Name=get_random_string(), Type=OrganisationTypeEnum.BUYER
@@ -454,9 +501,18 @@ def test_delete_order(
     assert organisation_created.id is not None
 
     # Create order
+    product_list = [
+        ProductOrderType(
+            Category=test_product_one.Category,
+            Variety=get_random_string(),
+            Packaging=test_product_one.Packaging,
+            Volume="test volume 1",
+            Price_per_unit="test price per unit 1",
+        )
+    ]
     order_in = OrderCreate(
         Type=OrderTypeEnum.SELL,
-        Products=test_product_order_type_list_of_one,
+        Products=product_list,
         Organisation_id=organisation_created.id,
     )
 
@@ -479,8 +535,8 @@ def test_delete_order(
 
 def test_creation_all_types(
     test_db: Session,
-    test_product_order_type_list_of_one: List[ProductOrderType],
-    test_product_order_type_list_of_two: List[ProductOrderType],
+    test_product_one: ProductCreate,
+    test_product_two: ProductCreate,
 ) -> None:
     # Create organisation
     organisation_one = OrganisationCreate(
@@ -491,15 +547,40 @@ def test_creation_all_types(
     assert organisation_created.id is not None
 
     # Create order
+    product_list_two = [
+        ProductOrderType(
+            Category=test_product_one.Category,
+            Variety=get_random_string(),
+            Packaging=test_product_one.Packaging,
+            Volume="test volume 1",
+            Price_per_unit="test price per unit 1",
+        ),
+        ProductOrderType(
+            Category=test_product_two.Category,
+            Variety=get_random_string(),
+            Packaging=test_product_two.Packaging,
+            Volume="test volume 2",
+            Price_per_unit="test price per unit 2",
+        ),
+    ]
     order_in_one = OrderCreate(
         Type=OrderTypeEnum.SELL,
-        Products=test_product_order_type_list_of_two,
+        Products=product_list_two,
         Organisation_id=organisation_created.id,
     )
 
+    product_list_one = [
+        ProductOrderType(
+            Category=test_product_one.Category,
+            Variety=get_random_string(),
+            Packaging=test_product_one.Packaging,
+            Volume="test volume 1",
+            Price_per_unit="test price per unit 1",
+        )
+    ]
     order_in_two = OrderCreate(
         Type=OrderTypeEnum.BUY,
-        Products=test_product_order_type_list_of_one,
+        Products=product_list_one,
         Organisation_id=organisation_created.id,
     )
 
@@ -525,7 +606,6 @@ def test_creation_all_types(
     organisation_products = organisation_created.Products
     assert organisation_orders[0].id == order_created_one.id
     assert organisation_orders[1].id == order_created_two.id
-    test_product_type_two = test_product_order_type_list_of_two
-    test_product_type_one = test_product_order_type_list_of_one
-    assert organisation_products[0]["Category"] == test_product_type_two[0].Category
-    assert organisation_products[-1]["Category"] == test_product_type_one[0].Category
+
+    assert organisation_products[0]["Category"] == product_list_two[0].Category
+    assert organisation_products[-1]["Category"] == product_list_one[0].Category
