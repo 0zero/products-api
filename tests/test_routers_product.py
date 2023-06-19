@@ -1,39 +1,24 @@
-import pytest
 from fastapi.testclient import TestClient
+from tests.helpers import get_random_string
 
 from src.database.schemas.product import ProductCreate, ProductUpdate
 
 
-@pytest.fixture()
-def test_product_one() -> ProductCreate:
-    return ProductCreate(
+def test_successful_post_single_product(test_app_with_db: TestClient) -> None:
+    product_in = ProductCreate(
         Category="test category 1",
-        Variety="test variety 1",
+        Variety=get_random_string(),
         Packaging="test packaging 1",
     )
-
-
-@pytest.fixture()
-def test_product_two() -> ProductCreate:
-    return ProductCreate(
-        Category="test category 2",
-        Variety="test variety 2",
-        Packaging="test packaging 2",
-    )
-
-
-def test_successful_post_single_product(
-    test_app_with_db: TestClient, test_product_one: ProductCreate
-) -> None:
-    response = test_app_with_db.post("/api/product", json=test_product_one.dict())
+    response = test_app_with_db.post("/api/product", json=product_in.dict())
 
     assert response.status_code == 201
 
     content = response.json()
     assert content["id"] is not None
-    assert content["Category"] == test_product_one.Category
-    assert content["Variety"] == test_product_one.Variety
-    assert content["Packaging"] == test_product_one.Packaging
+    assert content["Category"] == product_in.Category
+    assert content["Variety"] == product_in.Variety
+    assert content["Packaging"] == product_in.Packaging
 
 
 def test_failure_to_post_single_product(test_app_with_db: TestClient) -> None:
@@ -62,10 +47,13 @@ def test_failure_to_post_single_product(test_app_with_db: TestClient) -> None:
     }
 
 
-def test_successful_get_single_product(
-    test_app_with_db: TestClient, test_product_one: ProductCreate
-) -> None:
-    post_response = test_app_with_db.post("/api/product", json=test_product_one.dict())
+def test_successful_get_single_product(test_app_with_db: TestClient) -> None:
+    product_in = ProductCreate(
+        Category="test category 1",
+        Variety=get_random_string(),
+        Packaging="test packaging 1",
+    )
+    post_response = test_app_with_db.post("/api/product", json=product_in.dict())
 
     assert post_response.status_code == 201
     post_content = post_response.json()
@@ -77,9 +65,9 @@ def test_successful_get_single_product(
 
     get_content = get_response.json()
     assert get_content["id"] == post_content["id"]
-    assert get_content["Category"] == test_product_one.Category
-    assert get_content["Variety"] == test_product_one.Variety
-    assert get_content["Packaging"] == test_product_one.Packaging
+    assert get_content["Category"] == product_in.Category
+    assert get_content["Variety"] == product_in.Variety
+    assert get_content["Packaging"] == product_in.Packaging
 
 
 def test_unsuccessful_get_single_product(test_app_with_db: TestClient) -> None:
@@ -98,18 +86,26 @@ def test_unsuccessful_get_single_product(test_app_with_db: TestClient) -> None:
 
 def test_successful_get_many_products_with_queries(
     test_app_with_db: TestClient,
-    test_product_one: ProductCreate,
-    test_product_two: ProductCreate,
 ) -> None:
+    product_in_one = ProductCreate(
+        Category="test category 1",
+        Variety=get_random_string(),
+        Packaging="test packaging 1",
+    )
     post_response_one = test_app_with_db.post(
-        "/api/product", json=test_product_one.dict()
+        "/api/product", json=product_in_one.dict()
     )
     assert post_response_one.status_code == 201
     post_content_one = post_response_one.json()
     assert post_content_one["id"] is not None
 
+    product_in_two = ProductCreate(
+        Category="test category 1",
+        Variety=get_random_string(),
+        Packaging="test packaging 1",
+    )
     post_response_two = test_app_with_db.post(
-        "/api/product", json=test_product_two.dict()
+        "/api/product", json=product_in_two.dict()
     )
     assert post_response_two.status_code == 201
     post_content_two = post_response_two.json()
@@ -129,10 +125,13 @@ def test_successful_get_many_products_with_queries(
     assert len(get_content) == number_of_products
 
 
-def test_successful_delete_single_product(
-    test_app_with_db: TestClient, test_product_one: ProductCreate
-) -> None:
-    post_response = test_app_with_db.post("/api/product", json=test_product_one.dict())
+def test_successful_delete_single_product(test_app_with_db: TestClient) -> None:
+    product_in = ProductCreate(
+        Category="test category 1",
+        Variety=get_random_string(),
+        Packaging="test packaging 1",
+    )
+    post_response = test_app_with_db.post("/api/product", json=product_in.dict())
 
     assert post_response.status_code == 201
     post_content = post_response.json()
@@ -144,9 +143,9 @@ def test_successful_delete_single_product(
 
     delete_content = delete_response.json()
     assert delete_content["id"] == post_content["id"]
-    assert delete_content["Category"] == test_product_one.Category
-    assert delete_content["Variety"] == test_product_one.Variety
-    assert delete_content["Packaging"] == test_product_one.Packaging
+    assert delete_content["Category"] == product_in.Category
+    assert delete_content["Variety"] == product_in.Variety
+    assert delete_content["Packaging"] == product_in.Packaging
 
     get_response = test_app_with_db.get(f"/api/product/{post_content['id']}")
     assert get_response.status_code == 404
@@ -166,10 +165,13 @@ def test_unsuccessful_delete_single_product(test_app_with_db: TestClient) -> Non
     }
 
 
-def test_successful_update_single_product(
-    test_app_with_db: TestClient, test_product_one: ProductCreate
-) -> None:
-    post_response = test_app_with_db.post("/api/product", json=test_product_one.dict())
+def test_successful_update_single_product(test_app_with_db: TestClient) -> None:
+    product_in = ProductCreate(
+        Category="test category 1",
+        Variety=get_random_string(),
+        Packaging="test packaging 1",
+    )
+    post_response = test_app_with_db.post("/api/product", json=product_in.dict())
 
     assert post_response.status_code == 201
     post_content = post_response.json()
@@ -188,8 +190,8 @@ def test_successful_update_single_product(
     update_content = update_response.json()
     assert update_content["id"] == post_content["id"]
     assert update_content["Category"] == "test category UPDATED"
-    assert update_content["Variety"] == test_product_one.Variety
-    assert update_content["Packaging"] == test_product_one.Packaging
+    assert update_content["Variety"] == product_in.Variety
+    assert update_content["Packaging"] == product_in.Packaging
 
     get_response = test_app_with_db.get(f"/api/product/{post_content['id']}")
     assert get_response.status_code == 200
