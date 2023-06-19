@@ -9,5 +9,6 @@ class CRUDOrganisation(CRUDBase[Organisation, OrganisationCreate, OrganisationUp
     """
     Organisation CRUD class with default methods to Create, Read, Update, Delete (CRUD).
     """
+
     def __init__(self, model: Organisation):
         super().__init__(model)

@@ -13,6 +13,7 @@ from src.database.models.base import Base, OrganisationTypeEnum
 # Classes used for database table
 
 
+# TODO:  unique constraint on name and type
 class Organisation(Base):
     __tablename__ = "organisations"
 

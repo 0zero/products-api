@@ -20,10 +20,10 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def get_db() -> Generator[Session, Session, None]:
     """
     Generator for a database session to be used in routers.
-    
+
     Return: Database session generator
     """
-    
+
     try:
         logger.info("Initialising database session...")
         db = SessionLocal()

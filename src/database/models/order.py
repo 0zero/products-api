@@ -33,6 +33,8 @@ class ProductType(sqla.types.TypeDecorator):  # type: ignore
 
 # Classes used for database table
 
+# TODO: make Products nullable
+
 
 class Order(Base):
     __tablename__ = "orders"
@@ -40,5 +42,5 @@ class Order(Base):
     id = sqla.Column(sqla.Integer, primary_key=True, nullable=False)
     Type = sqla.Column(sqla.Enum(OrderTypeEnum), index=True, nullable=False)  # type: ignore
     References = sqla.Column(sqla.Integer, sqla.ForeignKey("orders.id"))
-    Products = sqla.Column(sqla.ARRAY(ProductType), nullable=False)  # type: ignore
+    Products = sqla.Column(sqla.ARRAY(ProductType), nullable=True)  # type: ignore
     Organisation_id = sqla.Column(sqla.Integer, sqla.ForeignKey("organisations.id"))

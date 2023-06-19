@@ -16,7 +16,7 @@ class CRUDOrder(CRUDBase[Order, OrderCreate, OrderUpdate]):
     """
     Orders CRUD class with default methods to Create, Read, Update, Delete (CRUD).
     """
-    
+
     def __init__(self, model: Order):
         super().__init__(model)
 

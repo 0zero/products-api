@@ -13,7 +13,7 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     """
     CRUD class with default methods to Create, Read, Update, Delete (CRUD).
-    
+
     Keyword arguments:
     ModelType -- SQLAlchemy model class
     CreateSchemaType -- Pydantic model class used to create new records
@@ -21,7 +21,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     Return: return_description
     """
-    
+
     def __init__(self, model: ModelType):
         self.model = model
 
@@ -34,7 +34,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             obj_in -- Pydantic model class used to create new records
         Return: SQLAlchemy model class
         """
-        
+
         db_obj = self.model(**obj_in.dict())
         db.add(db_obj)
         db.commit()
@@ -49,7 +49,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             db -- Database session
             id -- ID of the record to retrieve
         Return: SQLAlchemy model class or None
-        """        
+        """
         result = db.query(self.model).filter(self.model.id == id).first()
         return result if result else None
 
@@ -64,7 +64,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             skip -- Number of records to skip
             limit -- Number of records to retrieve
         Return: List of SQLAlchemy model classes or None
-        """         
+        """
         result = (
             db.query(self.model).order_by(self.model.id).offset(skip).limit(limit).all()
         )
