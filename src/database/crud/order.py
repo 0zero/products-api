@@ -50,6 +50,13 @@ class CRUDOrder(CRUDBase[Order, OrderCreate, OrderUpdate]):
                     Variety=product.Variety,
                     Packaging=product.Packaging,
                 )
-                product_created = product_crud.create(db=db, obj_in=product_obj_in)
-                product_ids.append(product_created.id)
+                check = product_crud.get_many_by_category_and_variety_and_packaging(
+                    db=db,
+                    category=product_obj_in.Category,
+                    variety=product_obj_in.Variety,
+                    packaging=product_obj_in.Packaging,
+                )
+                if not check:
+                    product_created = product_crud.create(db=db, obj_in=product_obj_in)
+                    product_ids.append(product_created.id)
         return db_obj, product_ids  # type: ignore
