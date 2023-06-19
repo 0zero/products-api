@@ -20,7 +20,7 @@ from src.database.schemas.product import ProductCreate, ProductUpdate
 def test_product_one() -> ProductCreate:
     return ProductCreate(
         Category="test category 1",
-        Variety="test variety 1",
+        Variety=get_random_string(),
         Packaging="test packaging 1",
     )
 
@@ -29,7 +29,7 @@ def test_product_one() -> ProductCreate:
 def test_product_two() -> ProductCreate:
     return ProductCreate(
         Category="test category 2",
-        Variety="test variety 2",
+        Variety=get_random_string(),
         Packaging="test packaging 2",
     )
 
@@ -38,7 +38,7 @@ def test_product_two() -> ProductCreate:
 def test_product_three() -> ProductCreate:
     return ProductCreate(
         Category="test category 3",
-        Variety="test variety 3",
+        Variety=get_random_string(),
         Packaging="test packaging 3",
     )
 
@@ -50,7 +50,7 @@ def test_product_order_type_list_of_one(
     return [
         ProductOrderType(
             Category=test_product_one.Category,
-            Variety=test_product_one.Variety,
+            Variety=get_random_string(),
             Packaging=test_product_one.Packaging,
             Volume="test volume 1",
             Price_per_unit="test price per unit 1",
@@ -64,14 +64,14 @@ def test_product_order_type_list_of_two(
 ) -> List[ProductOrderType]:
     product_order_one = ProductOrderType(
         Category=test_product_one.Category,
-        Variety=test_product_one.Variety,
+        Variety=get_random_string(),
         Packaging=test_product_one.Packaging,
         Volume="test volume 1",
         Price_per_unit="test price per unit 1",
     )
     product_order_two = ProductOrderType(
         Category=test_product_two.Category,
-        Variety=test_product_two.Variety,
+        Variety=get_random_string(),
         Packaging=test_product_two.Packaging,
         Volume="test volume 2",
         Price_per_unit="test price per unit 2",

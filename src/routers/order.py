@@ -84,7 +84,14 @@ async def create_order(
             logger.info(
                 f"Updated order_in object from reference with the following: {updated_details}"
             )
-            return order_crud.create(db=db, obj_in=updated_order_in)
+            order_created_ref, product_ids_created_ref = order_crud.create_new_order(
+                db=db, obj_in=updated_order_in
+            )
+            logger.info(
+                f"Order {order_created_ref.id} created with {str(len(product_ids_created_ref))} "
+                f"new products: {product_ids_created_ref}."
+            )
+            return order_created_ref
 
     order_created, product_ids_created = order_crud.create_new_order(
         db=db, obj_in=order_in
@@ -92,7 +99,7 @@ async def create_order(
 
     logger.info(
         f"Order {order_created.id} created with {str(len(product_ids_created))} "
-        "new products: {product_ids_created}."
+        f"new products: {product_ids_created}."
     )
     return order_created
 
