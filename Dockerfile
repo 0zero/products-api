@@ -57,5 +57,5 @@ COPY . .
 
 # Dont need the entry point anymore as DB is live on AWS, 
 # so we don't need to wait for it to be ready
-# RUN chmod +x /usr/src/app/bin/entrypoint.sh
-# ENTRYPOINT ["bash", "/usr/src/app/bin/entrypoint.sh"]
+RUN chmod +x /usr/src/app/bin/entrypoint.sh
+ENTRYPOINT ["bash", "/usr/src/app/bin/entrypoint.sh"]
