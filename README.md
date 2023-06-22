@@ -62,13 +62,15 @@ make lint
 :information_source: Note this will reformat all Python code in your `src/` and `tests/` folders.
 ### Docker images setup
 
-For this app we need a single docker images for the [app](Dockerfile).
+For this app we need two docker images: one for the [app](Dockerfile) and the other for the [database](src/database/Dockerfile).
 
-We can build the image using the following docker-compose command
+We can build the images using the following docker-compose command
 ```bash
 docker-compose build
 ```
 :information_source: If you're using docker-compose v2+ you can use `docker compose build` instead but both commands work.
+
+You will also need to create a `.env` file in this projects root directory and include the environmental variables `DATABASE_URL` and `DATABASE_TEST_URL`. You can populate them with the same values as found in the [docker-compose.yml file](docker-compose.yml).
 
 Now that we have the docker images all set, we can run/start them as containers
 ```bash
@@ -77,10 +79,11 @@ docker-compose up -d
 
 If you want to build the images and start the containers with the same command you can use `docker-compose up -d --build`.
 
-We can now check the logs to see if everything is ok using the following
+We can now check the logs to see if everything is ok using the following (add `-f` after logs to stream the logs)
 
 ```bash
 docker-compose logs webapi
+docker-compose logs database
 ```
 
 To check that everything is working as expected we can run some python tests using
@@ -89,7 +92,14 @@ To check that everything is working as expected we can run some python tests usi
 docker-compose exec webapi python -m pytest
 ```
 
-The Postgres database is currently live and public as an [AWS RDS](https://aws.amazon.com/rds/) instance. The URI is in the [docker-compose.yml](docker-compose.yml) file. The test database is used during local testing and is rolled back after each session. The "prod" database is live and populated with some data. CI spins up a local (to CI) Postgres database, then the migrations are applied before it is used to run the integrations tests in CI (Github Actions are currently being used for this).
+Should you want to check the Postgres database you can use the following command to log in
+```bash
+docker-compose exec database psql -U postgres
+```
+
+where the user is `postgres`. You can then use the postgres CLI and SQL commands to look at the database. The database tables are setup automatically via docker-compose. Note that the test database tables are created during testing only. The tables are unpopulated to begin with.
+
+For CI, we spin up a local (to CI) Postgres database, then the migrations are applied before it is used to run the integrations tests in CI (Github Actions are currently being used for this).
 
 Running the application
 -------------------
