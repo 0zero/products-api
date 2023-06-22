@@ -147,4 +147,3 @@ are highlighted below.
 4. I've added basic continuous integration but no continuous deployment. Currently, I install python, the poetry environment, perform some code linting, run pytest, and build the docker image. Ideally, we'd want to run a few steps in CI: BUILD-STAGE: build-python, ensure code is of good standard with linters, and build docker images; TEST-STAGE: run python tests and ensure everything works as expected; and the DEPLOY-STAGE: push docker images to some repository e.g. AWS ECR. 
 5. The API app runs locally at the moment but it would be great if it ran in the cloud and was automatically deployed with each successful MR/PR.
 6. An optional frontend for an easier user experience.
-7. Database access is currently very open, so in a real environment this would be a BIG no-no but similarly to auth - there isn't anything sensitive in the app or database and I'll take the database down soon enough. 
